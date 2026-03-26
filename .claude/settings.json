@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"Session-Abschluss: Bitte /stop ausfuehren, um DEV-LOG, ISSUES-LOG und Dokumentation zu aktualisieren.\"}'",
+            "statusMessage": "Session-Abschluss-Reminder..."
+          }
+        ]
+      }
+    ]
+  }
+}
