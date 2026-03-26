@@ -1,6 +1,6 @@
 ---
 name: stop
-description: "Protokolliert die Session in DEV-LOG.md, trägt gelöste Issues in ISSUES-LOG.md ein und erstellt/aktualisiert Dokumentation für geänderte Dateien. Trigger: 'session abschließen', 'session protokollieren', 'session log', '/stop'."
+description: "Protokolliert die Session in DEV-LOG.md, trägt gelöste Issues in ISSUES-LOG.md ein und erstellt/aktualisiert Dokumentation für alle geänderten Dateien — colocated und zentral im Root. Trigger: 'session abschließen', 'session protokollieren', 'session log', '/stop'."
 argument-hint: "[kurze Beschreibung des Session-Themas]"
 ---
 
@@ -12,7 +12,10 @@ Protokolliert die aktuelle Session vollständig und hält Wissen dauerhaft fest.
 
 1. **DEV-LOG.md** — Datierter Eintrag mit Zusammenfassung aller Änderungen dieser Session
 2. **ISSUES-LOG.md** — Trägt gelöste Probleme mit Ursache & Lösung ein
-3. **Dokumentation** — Erstellt oder aktualisiert Docs für neue/geänderte Dateien (colocated + zentral)
+3. **Colocated Docs** — `README.md` direkt neben jeder neuen/geänderten Datei oder in deren Verzeichnis
+4. **Zentrale Docs** — `docs/<Thema>.md` im Root für alle relevanten Änderungen
+
+> **Wichtig:** Dieser Skill protokolliert alles — auch die eigenen Schritte, die er ausführt. Jede erstellte oder aktualisierte Datei wird in DEV-LOG.md aufgeführt.
 
 ## Ablauf
 
@@ -24,10 +27,11 @@ Gehe die gesamte Konversation durch und identifiziere:
 - **Welche Probleme wurden gelöst?** (Problem, Ursache, Lösung)
 - **Wurden neue Dateien, Komponenten, Routes, Schemas etc. erstellt?**
 - **Welche Architekturentscheidungen wurden getroffen?**
+- **Welche Dateien hat der Skill selbst erstellt oder aktualisiert?** (Docs, Logs)
 
 ### Schritt 2: DEV-LOG.md aktualisieren
 
-Lies zuerst `DEV-LOG.md` und füge **oben nach dem Titel** (oder am Ende, falls das Format es so vorgibt) einen neuen Eintrag ein:
+Lies zuerst `DEV-LOG.md` und füge **oben nach dem Titel** einen neuen Eintrag ein:
 
 ```markdown
 ## YYYY-MM-DD — <Titel der Session>
@@ -46,9 +50,17 @@ Lies zuerst `DEV-LOG.md` und füge **oben nach dem Titel** (oder am Ende, falls 
 ### Architekturentscheidungen
 
 - <Entscheidung> — <Begründung>
+
+### Session-Protokoll (von /stop erstellt)
+
+| Datei | Aktion |
+|-------|--------|
+| `DEV-LOG.md` | Eintrag ergänzt |
+| `docs/foo.md` | Erstellt |
+| `src/bar/README.md` | Aktualisiert |
 ```
 
-Nur Sektionen einfügen, die relevant sind. Keine leeren Tabellen oder Abschnitte.
+Nur Sektionen einfügen, die relevant sind. Die Sektion **Session-Protokoll** immer einfügen — sie listet alle Dateien, die der Skill selbst angelegt oder verändert hat.
 
 ### Schritt 3: ISSUES-LOG.md aktualisieren
 
@@ -70,43 +82,66 @@ Falls in dieser Session Fehler/Probleme gelöst wurden, lies `ISSUES-LOG.md` und
 
 Falls keine Issues gelöst wurden, diesen Schritt überspringen.
 
-### Schritt 4: Dokumentation erstellen/aktualisieren
+### Schritt 4: Colocated Docs erstellen/aktualisieren
 
-#### Colocated Docs (Priorität 1)
+Für **jede** neu erstellte oder veränderte Datei/Modul eine `README.md` im selben Verzeichnis anlegen oder aktualisieren. Inhalt je nach Dateityp:
 
-Für jede neu erstellte oder stark veränderte Datei/Modul:
+- **Vue-Komponente / Web Component:** Props-Tabelle, Events, kurze Nutzungsbeschreibung
+- **Controller / Route:** Endpoint-Tabelle mit Methode, Pfad, Beschreibung
+- **Service / Modul:** Öffentliche Methoden mit Parametern und Rückgabewerten
+- **Schema / Migration:** Zweck der Änderung, betroffene Tabellen/Felder
+- **Konfig / Setup:** Pflichtfelder, Umgebungsvariablen, Abhängigkeiten
+- **Sonstiges:** Kurze Beschreibung, Zweck, Nutzungshinweis
 
-- **Vue-Komponente / Lit Web Component:** Kurz-Kommentar im File-Header mit Props-Tabelle (falls noch nicht vorhanden)
-- **PHP-Controller / Route:** `README.md` im gleichen Verzeichnis mit Endpoint-Tabelle
-- **Backend-Modul / Service:** JSDoc / PHPDoc für öffentliche Methoden
-- **Datenbank-Schema / Migration:** Kommentar in der SQL/Schema-Datei mit Zweck der Änderung
+Wenn im Verzeichnis bereits eine `README.md` existiert: aktualisieren, nicht überschreiben. Bestehende korrekte Inhalte beibehalten.
 
-Nur erstellen, wenn die Datei **keine ausreichende Dokumentation** hat. Bestehende Docs aktualisieren, nicht überschreiben.
+### Schritt 5: Zentrale Docs erstellen/aktualisieren
 
-#### Zentrale Docs (Priorität 2)
+Für **jede** relevante Änderung in `docs/<Thema>.md` im Root dokumentieren. Themen-Mapping:
 
-Nur wenn eine **architekturrelevante Entscheidung** getroffen wurde (neue Technologie, neue Layer, neues Pattern):
+- Neue Komponente / UI-Modul → `docs/components.md`
+- Neue Route / API-Endpoint → `docs/api.md`
+- Neues Schema / DB-Änderung → `docs/schema.md`
+- Neues Setup / Konfiguration → `docs/setup.md`
+- Architekturentscheidung → `docs/architecture.md`
+- Sonstiges → `docs/<passendes-thema>.md`
 
-- Erstelle oder aktualisiere `docs/<Thema>.md`
-- Format: Kurze Beschreibung, Begründung, Bezug zu anderen Teilen des Systems
+Falls `docs/` noch nicht existiert: **ohne Rückfrage anlegen**.
 
-Wenn ein `docs/`-Verzeichnis noch nicht existiert, frage den User zuerst, ob es angelegt werden soll.
+Format für jeden Eintrag in einer zentralen Doc:
 
-### Schritt 5: Bestätigung
+```markdown
+## <Thema oder Feature-Name> _(YYYY-MM-DD)_
+
+<Kurze Beschreibung, was es ist und wozu es dient>
+
+**Ort:** `path/to/file`
+
+**Begründung:** <Warum wurde es so umgesetzt?>
+
+**Bezüge:** <Verbindung zu anderen Teilen des Systems, falls relevant>
+```
+
+Bestehende Einträge nicht überschreiben — neue Abschnitte anhängen oder vorhandene aktualisieren.
+
+### Schritt 6: Bestätigung
 
 Gib eine kompakte Zusammenfassung aus:
 
 ```
 Session protokolliert:
-✓ DEV-LOG.md — "<Session-Titel>"
-✓ ISSUES-LOG.md — N Issue(s) eingetragen
-✓ Docs — X Datei(en) erstellt/aktualisiert
+✓ DEV-LOG.md        — "<Session-Titel>"
+✓ ISSUES-LOG.md     — N Issue(s) eingetragen
+✓ Colocated Docs    — X README.md erstellt/aktualisiert
+✓ Zentrale Docs     — Y docs/*.md erstellt/aktualisiert
 ```
 
 ## Regeln
 
 - **Datum immer aus dem aktuellen Datum** (nicht aus der Konversation schätzen)
 - Keine leeren Abschnitte oder Platzhalter eintragen
-- Bestehende Einträge in DEV-LOG / ISSUES-LOG nie überschreiben — nur anhängen
-- Dokumentation nur für tatsächlich geänderte/erstellte Dateien
+- Bestehende Einträge in DEV-LOG / ISSUES-LOG / Docs **nie überschreiben** — nur anhängen oder ergänzen
+- Alle Dokumentations-Dateien sind **Markdown** (`.md`)
+- `docs/` immer anlegen, wenn noch nicht vorhanden — keine Rückfrage
+- Das **Session-Protokoll** im DEV-LOG immer befüllen, auch wenn nur Docs geschrieben wurden
 - Stil konsistent mit bestehenden Einträgen halten

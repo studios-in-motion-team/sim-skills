@@ -5,8 +5,21 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"systemMessage\": \"Session-Abschluss: Bitte /stop ausfuehren, um DEV-LOG, ISSUES-LOG und Dokumentation zu aktualisieren.\"}'",
-            "statusMessage": "Session-Abschluss-Reminder..."
+            "command": "bash \"${PWD}/scripts/auto-log.sh\" 2>/dev/null || true",
+            "statusMessage": "Session-Protokoll wird geschrieben...",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${PWD}/scripts/auto-log.sh\" 2>/dev/null || true",
+            "statusMessage": "Zwischenstand vor Komprimierung protokollieren...",
+            "async": true
           }
         ]
       }
