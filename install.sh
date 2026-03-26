@@ -3,10 +3,10 @@
 # Claude Code — Session Workflow Installer
 # https://github.com/studios-in-motion-team/sim-skills
 
-SKILL_VERSION="1.0.0"
+SKILL_VERSION="1.1.0"
 REPO_RAW="https://raw.githubusercontent.com/studios-in-motion-team/sim-skills/main"
-SKILL_TARGET="$HOME/.claude/commands/stop.md"
-SETTINGS_FILE="$HOME/.claude/settings.json"
+SKILL_TARGET=".claude/commands/stop.md"
+SETTINGS_FILE=".claude/settings.json"
 
 HOOK_COMMAND="echo '{\"systemMessage\": \"Session-Abschluss: Bitte /stop ausfuehren, um DEV-LOG, ISSUES-LOG und Dokumentation zu aktualisieren.\"}'"
 
@@ -25,7 +25,7 @@ echo ""
 
 echo -e "${BLUE}[1/3] Skill installieren...${NC}"
 
-mkdir -p "$HOME/.claude/commands"
+mkdir -p ".claude/commands"
 
 if [ -f "$SKILL_TARGET" ]; then
   echo -e "  ${YELLOW}⚠ $SKILL_TARGET existiert bereits — wird überschrieben.${NC}"
@@ -74,31 +74,23 @@ else
   fi
 fi
 
-# ── 3. Projekt-Templates (optional) ───────────────────────────────────────────
+# ── 3. Projekt-Templates ──────────────────────────────────────────────────────
 
 echo ""
 echo -e "${BLUE}[3/3] Projekt-Templates...${NC}"
-echo -e "  Sollen DEV-LOG.md und ISSUES-LOG.md im aktuellen Verzeichnis angelegt werden?"
-echo -e "  Aktuelles Verzeichnis: ${YELLOW}$(pwd)${NC}"
-echo -n "  [j/N] "
-read -r ANSWER
 
-if [[ "$ANSWER" =~ ^[jJyY]$ ]]; then
-  if [ ! -f "DEV-LOG.md" ]; then
-    curl -fsSL "$REPO_RAW/templates/DEV-LOG.md" -o DEV-LOG.md
-    echo -e "  ${GREEN}✓ DEV-LOG.md angelegt${NC}"
-  else
-    echo -e "  ${YELLOW}⚠ DEV-LOG.md existiert bereits — übersprungen${NC}"
-  fi
-
-  if [ ! -f "ISSUES-LOG.md" ]; then
-    curl -fsSL "$REPO_RAW/templates/ISSUES-LOG.md" -o ISSUES-LOG.md
-    echo -e "  ${GREEN}✓ ISSUES-LOG.md angelegt${NC}"
-  else
-    echo -e "  ${YELLOW}⚠ ISSUES-LOG.md existiert bereits — übersprungen${NC}"
-  fi
+if [ ! -f "DEV-LOG.md" ]; then
+  curl -fsSL "$REPO_RAW/templates/DEV-LOG.md" -o DEV-LOG.md
+  echo -e "  ${GREEN}✓ DEV-LOG.md angelegt${NC}"
 else
-  echo -e "  Übersprungen. Templates liegen in ${YELLOW}templates/${NC} zur manuellen Verwendung."
+  echo -e "  ${YELLOW}⚠ DEV-LOG.md existiert bereits — übersprungen${NC}"
+fi
+
+if [ ! -f "ISSUES-LOG.md" ]; then
+  curl -fsSL "$REPO_RAW/templates/ISSUES-LOG.md" -o ISSUES-LOG.md
+  echo -e "  ${GREEN}✓ ISSUES-LOG.md angelegt${NC}"
+else
+  echo -e "  ${YELLOW}⚠ ISSUES-LOG.md existiert bereits — übersprungen${NC}"
 fi
 
 # ── Fertig ─────────────────────────────────────────────────────────────────────
@@ -108,7 +100,6 @@ echo -e "${GREEN}─────────────────────
 echo -e "${GREEN}Installation abgeschlossen.${NC}"
 echo ""
 echo -e "  Skill verfügbar als: ${BLUE}/stop${NC}"
+echo -e "  Hook + Skill sind repo-lokal in ${YELLOW}.claude/${NC} installiert."
 echo -e "  Beim nächsten Session-Ende erscheint automatisch eine Erinnerung."
-echo ""
-echo -e "  Falls /stop nicht erkannt wird: Claude Code neu starten."
 echo ""
